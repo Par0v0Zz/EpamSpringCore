@@ -1,5 +1,9 @@
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import java.time.LocalDate;
+import java.util.Date;
 
 public class App {
 
@@ -11,21 +15,26 @@ public class App {
         this.eventLogger = eventLogger;
     }
 
-    private void logEvent(String msg) {
+    private void logEvent(Event event) {
 
-        String message =
-                msg.replaceAll(client.getId(), client.getFullName());
-        eventLogger.logEvent(message);
+        eventLogger.logEvent(event);
     }
 
     public static void main(String[] args) {
 
-        ApplicationContext ctx =
+        ConfigurableApplicationContext ctx =
                 new ClassPathXmlApplicationContext("spring.xml");
 
         App app = ctx.getBean(App.class);
 
-        app.logEvent("Some event for 1");
-        app.logEvent("Some event for 2");
+        Event event = ctx.getBean(Event.class);
+        event.setMsg("Event 1");
+        app.logEvent(event);
+
+        event = ctx.getBean(Event.class);
+        event.setMsg("Event 2");
+        app.logEvent(event);
+
+        ctx.close();
     }
 }
